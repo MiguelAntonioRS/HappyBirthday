@@ -2,7 +2,7 @@
 
 Este proyecto consiste en una animación interactiva de "Feliz Cumpleaños" creada con HTML, CSS y JavaScript. La animación presenta efectos de fuegos artificiales y globos en un lienzo HTML5.
 
-Uso
+### Uso
 
   1.Clonar el repositorio:
   
@@ -16,7 +16,7 @@ Uso
 
        * Abre el archivo index.html en tu navegador web preferido.
 
-Estructura de Archivos
+### Estructura de Archivos
 
 El proyecto tiene la siguiente estructura de archivos:
 
@@ -25,6 +25,6 @@ El proyecto tiene la siguiente estructura de archivos:
     app.js: Archivo JavaScript que contiene la lógica de animación.
     README.md: Este archivo, que proporciona información sobre el proyecto.
 
-Personalización
+### Personalización
 
 Si deseas personalizar la animación o agregar nuevas características, puedes modificar el archivo app.js para ajustar los parámetros de animación o agregar nuevas funcionalidades.
