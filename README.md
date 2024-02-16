@@ -13,6 +13,7 @@ Uso
   * Navega a la carpeta del proyecto:
     
 >    cd feliz-cumpleanos
+
        * Abre el archivo index.html en tu navegador web preferido.
 
 Estructura de Archivos
