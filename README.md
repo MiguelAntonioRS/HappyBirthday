@@ -1,5 +1,5 @@
 # Animación de Feliz Cumpleaños
-
+ 
 Este proyecto consiste en una animación interactiva de "Feliz Cumpleaños" creada con HTML, CSS y JavaScript. La animación presenta efectos de fuegos artificiales y globos en un lienzo HTML. 
 
 ### Uso
