@@ -3,7 +3,7 @@
 Este proyecto consiste en una animación interactiva de "Feliz Cumpleaños" creada con HTML, CSS y JavaScript. La animación presenta efectos de fuegos artificiales y globos en un lienzo HTML. 
  
 ### Uso 
-
+ 
   1.Clonar el repositorio: 
   ``` 
   git clone https://github.com//MiguelAntonioRS/HappyBirthday
