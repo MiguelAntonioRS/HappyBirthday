@@ -6,7 +6,7 @@ Este proyecto consiste en una animación interactiva de "Feliz Cumpleaños" crea
  
   1.Clonar el repositorio:
   ``` 
-  git clone https://github.com//MiguelAntonioRS/HappyBirthday
+  git clone https://github.com//MiguelAntonioRS/HappyBirthday 
   ``` 
   2.Abrir el archivo HTML: 
   
