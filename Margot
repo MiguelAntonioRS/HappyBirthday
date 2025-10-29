@@ -1,0 +1,510 @@
+mkdir -p feliz-cumple-margot && cd feliz-cumple-margot
+
+cat > index.html <<'HTML'
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Feliz cumpleaños Margot</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="scene"></canvas>
+
+  <!-- Texto central accesible -->
+  <div id="centerText" aria-hidden="false">
+    <h1>Feliz cumpleaños<br/><span class="name">Margot</span></h1>
+    <p class="subtitle">Que tu día brille como esta galaxia ✨</p>
+  </div>
+
+  <!-- Barra inferior con mensajes que fluyen -->
+  <div id="bottomTicker" aria-hidden="true">
+    <div class="ticker-track" id="tickerTrack">
+      <!-- Mensajes añadidos por JS -->
+    </div>
+  </div>
+
+  <!-- Botón de reproducción -->
+  <button id="musicBtn" class="music-btn" aria-label="Reproducir música">▶︎</button>
+
+  <!-- Audio: coloca un archivo llamado music.mp3 en esta carpeta si quieres música -->
+  <audio id="bgMusic" loop preload="auto">
+    <source src="music.mp3" type="audio/mpeg">
+    Tu navegador no soporta reproducción de audio.
+  </audio>
+
+  <script src="app.js"></script>
+  <script>
+    (function(){
+      const btn = document.getElementById('musicBtn');
+      const audio = document.getElementById('bgMusic');
+      let playing = false;
+
+      function updateBtn() {
+        btn.textContent = playing ? '❚❚' : '▶︎';
+        btn.setAttribute('aria-pressed', String(playing));
+      }
+
+      btn.addEventListener('click', async () => {
+        try {
+          if (!playing) {
+            await audio.play();
+            playing = true;
+          } else {
+            audio.pause();
+            playing = false;
+          }
+        } catch (e) {
+          console.warn('Reproducción bloqueada o fallida', e);
+        }
+        updateBtn();
+      });
+
+      function firstInteract() {
+        if (!playing) {
+          audio.play().then(() => { playing = true; updateBtn(); })
+                      .catch(()=>{/* no crítico */});
+        }
+        window.removeEventListener('touchstart', firstInteract);
+        window.removeEventListener('click', firstInteract);
+      }
+      window.addEventListener('touchstart', firstInteract, {passive: true});
+      window.addEventListener('click', firstInteract, {once: true});
+      updateBtn();
+    })();
+  </script>
+</body>
+</html>
+HTML
+
+cat > style.css <<'CSS'
+/* Reset básico */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; width: 100%; background: #000; font-family: "Segoe UI", Roboto, Arial, sans-serif; color: #fff; overflow: hidden; }
+
+/* Canvas ocupa toda la pantalla */
+#scene {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(ellipse at center, #000011 0%, #000 60%);
+}
+
+/* Texto central */
+#centerText {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  text-align: center;
+  pointer-events: none;
+  z-index: 5;
+  mix-blend-mode: screen;
+}
+
+#centerText h1 {
+  font-size: clamp(2rem, 6vw, 5rem);
+  letter-spacing: 0.02em;
+  line-height: 0.9;
+  text-shadow: 0 0 6px rgba(255,200,240,0.12), 0 0 18px rgba(255,120,200,0.18), 0 0 40px rgba(255,90,180,0.12);
+  color: #ffefd9;
+  margin-bottom: 0.4rem;
+}
+
+#centerText h1 .name {
+  display: inline-block;
+  color: #ffe7f3;
+  background: linear-gradient(90deg, rgba(255,255,255,0.18), rgba(255,160,220,0.08));
+  padding: 0.05em 0.3em;
+  border-radius: 0.25em;
+  transform: translateZ(0);
+  box-shadow: 0 6px 20px rgba(200,80,170,0.12);
+}
+
+#centerText .subtitle {
+  margin-top: 0.6rem;
+  color: #cfe7ff;
+  opacity: 0.9;
+  font-size: clamp(0.9rem, 2vw, 1.2rem);
+}
+
+/* Barra inferior (ticker) */
+#bottomTicker {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 20px;
+  z-index: 6;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.ticker-track {
+  display: inline-block;
+  white-space: nowrap;
+  will-change: transform;
+  animation: tickerScroll 22s linear infinite;
+}
+
+/* Cada mensaje dentro del ticker */
+.ticker-item {
+  display: inline-block;
+  margin: 0 2.5rem;
+  font-weight: 600;
+  color: #fff;
+  padding: 0.35rem 0.6rem;
+  background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  border-radius: 999px;
+  box-shadow: 0 6px 24px rgba(100,40,120,0.08);
+  backdrop-filter: blur(4px);
+}
+
+@keyframes tickerScroll {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); } /* contenido debe repetirse para efecto infinito */
+}
+
+/* Botón de música */
+.music-btn {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 9;
+  background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+  border: none;
+  color: #fff;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 8px 30px rgba(50,10,80,0.35);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+/* pequeños mensajes que suben (pop) */
+.floatingMsg {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 6%;
+  pointer-events: none;
+  z-index: 7;
+  color: #fff;
+  font-weight: 600;
+  text-shadow: 0 6px 20px rgba(30,10,40,0.4);
+}
+
+/* responsive tweaks */
+@media (max-width: 600px) {
+  #centerText .subtitle { font-size: 0.95rem; }
+  .ticker-item { margin: 0 1.2rem; font-size: 0.9rem; }
+  .music-btn { width: 48px; height: 48px; font-size: 18px; }
+}
+CSS
+
+cat > app.js <<'JS'
+// Animación: galaxia + flores orbitando + ticker de mensajes
+(() => {
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d', { alpha: true });
+
+  let W = canvas.width = innerWidth;
+  let H = canvas.height = innerHeight;
+  let centerX = W / 2;
+  let centerY = H / 2;
+
+  window.addEventListener('resize', () => {
+    W = canvas.width = innerWidth;
+    H = canvas.height = innerHeight;
+    centerX = W / 2;
+    centerY = H / 2;
+    initParticles();
+  });
+
+  // ESTRELLAS / PARTICULAS DE FONDO
+  const stars = [];
+  function initStars() {
+    stars.length = 0;
+    const count = Math.floor((W * H) / 10000);
+    for (let i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.5 + 0.2,
+        alpha: 0.2 + Math.random() * 0.9,
+        tw: Math.random() * 120
+      });
+    }
+  }
+
+  // GALAXIA (partículas en espiral)
+  const galaxyParticles = [];
+  function initGalaxy() {
+    galaxyParticles.length = 0;
+    const arms = 3;
+    const particles = 700;
+    for (let i = 0; i < particles; i++) {
+      const arm = i % arms;
+      const radius = Math.pow(Math.random(), 1.8) * Math.min(W, H) * 0.4;
+      const angle = (i / particles) * Math.PI * 2 + arm * 0.8;
+      const sway = (Math.random() - 0.5) * 0.6;
+      galaxyParticles.push({ angle, radius, sway, speed: 0.0005 + Math.random() * 0.0019, hue: 220 + Math.random() * 120, size: Math.random() * 1.3 + 0.3 });
+    }
+  }
+
+  // FLORES que orbitan
+  const flowers = [];
+  function Flower(orbitRadius, angleOffset, size, colorHue, speed) {
+    this.orbitRadius = orbitRadius;
+    this.angle = angleOffset;
+    this.size = size;
+    this.hue = colorHue;
+    this.speed = speed;
+    this.pulse = Math.random() * 2 * Math.PI;
+  }
+  Flower.prototype.update = function (dt) {
+    this.angle += this.speed * dt;
+    this.pulse += 0.004 * dt;
+  };
+  Flower.prototype.draw = function (ctx) {
+    const x = centerX + Math.cos(this.angle) * this.orbitRadius;
+    const y = centerY + Math.sin(this.angle) * this.orbitRadius * 0.72;
+    const s = this.size * (1 + Math.sin(this.pulse) * 0.14);
+
+    // pétalos
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(Math.sin(this.angle * 2) * 0.5);
+    for (let p = 0; p < 6; p++) {
+      ctx.rotate((Math.PI * 2) / 6);
+      ctx.beginPath();
+      ctx.ellipse(0 + s * 6, 0, s * 6, s * 12, Math.PI / 6, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(${this.hue + p * 6}, 85%, ${50 - p * 3}%, 0.95)`;
+      ctx.fill();
+      ctx.closePath();
+    }
+    // centro
+    ctx.beginPath();
+    ctx.arc(0, 0, s * 4.2, 0, Math.PI * 2);
+    ctx.fillStyle = `hsla(${this.hue - 20}, 80%, 60%, 0.98)`;
+    ctx.fill();
+    ctx.restore();
+  };
+
+  function initFlowers() {
+    flowers.length = 0;
+    const count = Math.floor(Math.max(6, Math.min(18, (W + H) / 250)));
+    for (let i = 0; i < count; i++) {
+      const r = (Math.min(W, H) * 0.18) + (i * (Math.min(W, H) * 0.03));
+      const angle = (Math.PI * 2 / count) * i + Math.random() * 0.5;
+      const size = 3 + Math.random() * 1.4;
+      flowers.push(new Flower(r, angle, size, 300 - i * 10 + Math.random() * 40, 0.001 + Math.random() * 0.003));
+    }
+  }
+
+  // Mensajes inferiores (ticker)
+  const messages = [
+    "Que cada estrella te traiga un deseo cumplido, Margot 🌟",
+    "Que tu risa siga iluminando todo a tu alrededor 🌼",
+    "Un abrazo grande lleno de cariño y colores 🎁",
+    "Hoy celebramos tu magia: alegría, luz y flores 🌸",
+    "Que la dicha te acompañe hoy y siempre, amiga 💖",
+    "Brilla sin miedo — feliz cumpleaños, Margot ✨"
+  ];
+
+  // Inicia el ticker en el DOM
+  function initTicker() {
+    const track = document.getElementById('tickerTrack');
+    track.innerHTML = '';
+    for (let loop = 0; loop < 2; loop++) {
+      messages.forEach(msg => {
+        const span = document.createElement('span');
+        span.className = 'ticker-item';
+        span.textContent = msg;
+        track.appendChild(span);
+      });
+    }
+  }
+
+  // Mensajes flotantes que suben desde abajo
+  const floating = [];
+  function spawnFloating() {
+    const texts = [
+      "Te quiero mucho, Margot 💕",
+      "Siempre a tu lado, amiga 🥂",
+      "Que la vida te regale sonrisas 🌷",
+      "Hoy y siempre, celebro contigo 🌟"
+    ];
+    const text = texts[Math.floor(Math.random() * texts.length)];
+    floating.push({
+      text,
+      x: centerX + (Math.random() - 0.5) * 160,
+      y: H - 40,
+      alpha: 0.95,
+      life: 0,
+      speedY: 0.35 + Math.random() * 0.3,
+      size: 18 + Math.random() * 6
+    });
+    if (floating.length > 6) floating.shift();
+  }
+
+  function initParticles() {
+    initStars();
+    initGalaxy();
+    initFlowers();
+    initTicker();
+  }
+  initParticles();
+
+  let last = performance.now();
+  function animate(now) {
+    const dt = now - last;
+    last = now;
+
+    ctx.clearRect(0, 0, W, H);
+
+    ctx.globalCompositeOperation = 'lighter';
+    for (let s of stars) {
+      s.tw += dt * 0.001;
+      const a = s.alpha * (0.7 + 0.3 * Math.sin(s.tw * 2));
+      ctx.fillStyle = `rgba(255,255,255,${a})`;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    for (let p of galaxyParticles) {
+      p.angle += p.speed * dt;
+      const x = centerX + Math.cos(p.angle + p.sway) * p.radius * (1 + Math.sin(p.angle) * 0.02);
+      const y = centerY + Math.sin(p.angle + p.sway) * p.radius * 0.72 * (1 + Math.cos(p.angle) * 0.02);
+      const size = p.size * (0.6 + 0.8 * (Math.sin(p.angle * 7) * 0.5 + 0.5));
+      ctx.beginPath();
+      ctx.fillStyle = `hsla(${p.hue}, 90%, 62%, 0.9)`;
+      ctx.globalAlpha = 0.9 * (0.6 + Math.random() * 0.4);
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.globalAlpha = 1;
+
+    const lg = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.min(W, H) * 0.45);
+    lg.addColorStop(0, 'rgba(255,240,240,0.25)');
+    lg.addColorStop(0.35, 'rgba(180,150,220,0.06)');
+    lg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = lg;
+    ctx.fillRect(0, 0, W, H);
+
+    for (let f of flowers) {
+      f.update(dt);
+      f.draw(ctx);
+    }
+
+    ctx.save();
+    ctx.font = `bold ${Math.max(28, Math.min(140, W * 0.07))}px "Segoe UI", Roboto, Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor = 'rgba(220,150,240,0.22)';
+    ctx.shadowBlur = 40;
+    ctx.fillStyle = 'rgba(255,245,235,0.95)';
+    ctx.fillText('Feliz cumpleaños', centerX, centerY - (H * 0.04));
+    ctx.font = `bold ${Math.max(20, Math.min(96, W * 0.05))}px "Segoe UI", Roboto, Arial`;
+    ctx.fillStyle = 'rgba(255,220,255,0.98)';
+    ctx.fillText('Margot', centerX, centerY + (H * 0.04));
+    ctx.restore();
+
+    for (let i = floating.length - 1; i >= 0; i--) {
+      const m = floating[i];
+      m.y -= m.speedY * dt * 0.05;
+      m.alpha -= 0.0007 * dt;
+      m.life += dt;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, m.alpha);
+      ctx.font = `600 ${m.size}px "Segoe UI", Roboto, Arial`;
+      ctx.fillStyle = 'white';
+      ctx.textAlign = 'center';
+      ctx.fillText(m.text, m.x, m.y);
+      ctx.restore();
+      if (m.alpha <= 0 || m.y < -40) floating.splice(i, 1);
+    }
+
+    if (Math.random() < 0.009) spawnFloating();
+
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+
+  for (let i = 0; i < 2; i++) {
+    setTimeout(spawnFloating, 800 * i + 400);
+  }
+
+  const track = document.getElementById('tickerTrack');
+  track.style.animationPlayState = 'running';
+
+  window.HB = {
+    addMessage(msg) {
+      messages.push(msg);
+      initTicker();
+    },
+    setName(name) {
+      const el = document.querySelector('#centerText .name');
+      if (el) el.textContent = name;
+    },
+    spawnFloating(text) {
+      if (text) {
+        floating.push({
+          text,
+          x: centerX + (Math.random() - 0.5) * 160,
+          y: H - 40,
+          alpha: 0.98,
+          life: 0,
+          speedY: 0.35 + Math.random() * 0.3,
+          size: 18 + Math.random() * 6
+        });
+      } else spawnFloating();
+    }
+  };
+
+  function initStars() {
+    stars.length = 0;
+    const count = Math.floor((W * H) / 10000);
+    for (let i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.5 + 0.2,
+        alpha: 0.2 + Math.random() * 0.9,
+        tw: Math.random() * 120
+      });
+    }
+  }
+})();
+JS
+
+cat > README.md <<'MD'
+```markdown
+# Animación de Feliz Cumpleaños (con galaxia y flores)
+
+Esta versión del proyecto muestra una animación interactiva y festiva hecha con HTML, CSS y JavaScript:
+
+- Una galaxia animada en el lienzo (canvas).
+- Texto central: "Feliz cumpleaños Margot".
+- Flores en movimiento que orbitan alrededor de la galaxia.
+- Mensajes únicos y cariñosos que fluyen en la parte inferior como si fueran de una amiga.
+- Soporte para música de fondo (coloca un archivo "music.mp3" en la carpeta).
+
+Cómo usar
+1. Si quieres verlo localmente:
+   python3 -m http.server 8000
+   y abrir: http://localhost:8000
+
+2. Para añadir una canción: coloca un archivo llamado music.mp3 en esta carpeta.
+
+Notas
+- Si deseas que haga el commit en tu repo, debes dar permisos o yo te puedo generar un patch para aplicar.
