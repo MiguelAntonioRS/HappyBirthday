@@ -11,7 +11,7 @@ Este proyecto consiste en una animación interactiva de "Feliz Cumpleaños" crea
   2.Abrir el archivo HTML:
   
   * Navega a la carpeta del proyecto:
-    ``` 
+    ```
     cd feliz-cumpleanos
     ``` 
        * Abre el archivo index.html en tu navegador web preferido.
